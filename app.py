@@ -15,8 +15,14 @@ pag = "https://ninihamburguesasapi.herokuapp.com"
 hamburguesas = db.hamburguesas
 ingredientes = db.ingredientes
 hamburguesa_ingrediente = db.hamburguesa_ingrediente
-id_hamburguesa = 0
-id_ingrediente = 0
+ids = db.ids
+if(len(list(ids.find({}, {"_id":0})))==0):
+    ids.insert_one({"nombre":"id_hamburguesa", "id":0})
+    ids.insert_one({"nombre":"id_ingrediente", "id":0})
+
+#id_hamburgesa = 0
+#id_ingrediente = 0
+
 
 @app.route('/hamburguesa', methods=['GET'])
 def get_hamburguesa():
@@ -35,8 +41,9 @@ def get_relations():
 
 @app.route('/hamburguesa', methods=['POST'])
 def post_hamburguesa():
-    global id_hamburguesa
-    print(id_hamburguesa)
+    #global id_hamburguesa
+    #print(id_hamburguesa)
+    id_hamburguesa = list(ids.find({"nombre":"id_hamburguesa"},{"_id":0}))[0]["id"]
     data = request.get_json()
     new_hamburguesa = crear_hamburguesa(data)
 
@@ -44,6 +51,9 @@ def post_hamburguesa():
         new_hamburguesa["id"] = id_hamburguesa
         new_hamburguesa["ingredientes"] = []
         id_hamburguesa += 1
+        myquery = {"nombre": "id_hamburguesa"}
+        newvalues = { "$set": { "id": id_hamburguesa } }
+        ids.update_one(myquery, newvalues)
         inserted_hamburguer = hamburguesas.insert_one(new_hamburguesa)
         if inserted_hamburguer is None:
             return jsonify(), 404
@@ -165,13 +175,17 @@ def get_ingrediente():
 
 @app.route('/ingrediente', methods=['POST'])
 def post_ingrediente():
-    global id_ingrediente
+    #global id_ingrediente
+    id_ingrediente = list(ids.find({"nombre":"id_ingrediente"},{"_id":0}))[0]["id"]
     data = request.get_json()
     new_ingrediente = crear_ingrediente(data)
 
     if new_ingrediente is not None:
         new_ingrediente["id"] = id_ingrediente
         id_ingrediente += 1
+        myquery = {"nombre": "id_ingrediente"}
+        newvalues = { "$set": { "id": id_ingrediente } }
+        ids.update_one(myquery, newvalues)
         inserted_ingrediente = ingredientes.insert_one(new_ingrediente)
         if inserted_ingrediente is None:
             return jsonify(), 404
