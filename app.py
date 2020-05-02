@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from functions import crear_hamburguesa, validar_patch, crear_ingrediente
 import ssl
+import threading
 
 app = Flask(__name__)
 
@@ -17,6 +18,7 @@ ingredientes = db.ingredientes
 hamburguesa_ingrediente = db.hamburguesa_ingrediente
 id_hamburguesa = 0
 id_ingrediente = 0
+lock = threading.Lock()
 
 @app.route('/hamburguesa', methods=['GET'])
 def get_hamburguesa():
@@ -35,6 +37,7 @@ def get_relations():
 
 @app.route('/hamburguesa', methods=['POST'])
 def post_hamburguesa():
+    lock.acquire()
     global id_hamburguesa
     print(id_hamburguesa)
     data = request.get_json()
@@ -46,11 +49,14 @@ def post_hamburguesa():
         id_hamburguesa += 1
         inserted_hamburguer = hamburguesas.insert_one(new_hamburguesa)
         if inserted_hamburguer is None:
+            lock.release()
             return jsonify(), 404
         else:
             hamburguesa = list(hamburguesas.find({"id":new_hamburguesa["id"]}, {"_id":0}))
+            lock.release()
             return jsonify(hamburguesa[0]), 201
     response = {'message': 'Input inválido'}
+    lock.release()
     return jsonify(response), 400
 
 @app.route('/hamburguesa/<id>', methods=['GET'])
@@ -165,6 +171,7 @@ def get_ingrediente():
 
 @app.route('/ingrediente', methods=['POST'])
 def post_ingrediente():
+    lock.acquire()
     global id_ingrediente
     data = request.get_json()
     new_ingrediente = crear_ingrediente(data)
@@ -174,11 +181,14 @@ def post_ingrediente():
         id_ingrediente += 1
         inserted_ingrediente = ingredientes.insert_one(new_ingrediente)
         if inserted_ingrediente is None:
+            lock.release()
             return jsonify(), 404
         else:
             ingrediente = list(ingredientes.find({"id":new_ingrediente["id"]}, {"_id":0}))
+            lock.release()
             return jsonify(ingrediente[0]), 201
     response = {'message': 'Input inválido'}
+    lock.release()
     return jsonify(response), 400
 
 @app.route('/ingrediente/<id>', methods=['GET'])

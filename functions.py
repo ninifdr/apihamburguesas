@@ -1,3 +1,5 @@
+import validators
+
 def crear_hamburguesa(data):
     #print(data)
     hamburguesa = {}
@@ -23,6 +25,8 @@ def crear_hamburguesa(data):
     if(isinstance(data["descripcion"],str) == False):
         return None
     if(isinstance(data["imagen"],str) == False):
+        return None
+    if(validators.url(data["imagen"]) != True):
         return None
 
     return hamburguesa
