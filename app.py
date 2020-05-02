@@ -66,7 +66,7 @@ def get_hamburguesa_id(id):
         if(len(all_ingredientes) > 0):
             for ingrediente in all_ingredientes:
                 hamburguesa[0]["ingredientes"].append({"path": pag+"/ingrediente/"+str(ingrediente["id_i"])})
-        return jsonify(hamburguesa), 200
+        return jsonify(hamburguesa[0]), 200
     else:
         response = {'message': 'Hamburguesa inexistente'}
         return jsonify(response), 404
@@ -193,7 +193,7 @@ def get_ingrediente_id(id):
         response = {'message': 'Ingrediente inexistente'}
         return jsonify(response), 404
     #print(hamburguesa)
-    return jsonify(ingrediente), 200
+    return jsonify(ingrediente[0]), 200
 
 @app.route('/ingrediente/<id>', methods=['DELETE'])
 def delete_ingrediente_id(id):
