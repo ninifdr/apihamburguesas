@@ -49,7 +49,7 @@ def post_hamburguesa():
             return jsonify(), 404
         else:
             hamburguesa = list(hamburguesas.find({"id":new_hamburguesa["id"]}, {"_id":0}))
-            return jsonify(hamburguesa), 201
+            return jsonify(hamburguesa[0]), 201
     response = {'message': 'Input inválido'}
     return jsonify(response), 400
 
@@ -108,7 +108,7 @@ def patch_hamburguesa_id(id):
             newvalues = { "$set": { key: data[key] } }
             hamburguesas.update_one(myquery, newvalues)
         all_hamburguesas = list(hamburguesas.find({"id":id}, {"_id":0}))
-        return jsonify(all_hamburguesas), 200
+        return jsonify(all_hamburguesas[0]), 200
     else:
         response = {'message': 'Parámetros inválidos'}
         return jsonify(response), 400
@@ -177,7 +177,7 @@ def post_ingrediente():
             return jsonify(), 404
         else:
             ingrediente = list(ingredientes.find({"id":new_ingrediente["id"]}, {"_id":0}))
-            return jsonify(ingrediente), 201
+            return jsonify(ingrediente[0]), 201
     response = {'message': 'Input inválido'}
     return jsonify(response), 400
 
