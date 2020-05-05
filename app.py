@@ -65,6 +65,7 @@ def post_hamburguesa():
 
 @app.route('/hamburguesa/<id>', methods=['GET'])
 def get_hamburguesa_id(id):
+    print(type(id))
     try:
         id = int(id)
     except:
@@ -221,7 +222,7 @@ def delete_ingrediente_id(id):
     if(len(all_ingredientes_hamburguesas) > 0):
         response = {'message': 'Ingrediente no se puede borrar, se encuentra presente en una hamburguesa'}
         return jsonify(response), 409
-    elif(len(all_ingredientes)) != 0:
+    elif(len(all_ingredientes) != 0 and len(all_ingredientes_hamburguesas) == 0:
         ingredientes.delete_many({"id": id})
         response = {'message': 'Ingrediente eliminado'}
         return jsonify(response), 200
