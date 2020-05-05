@@ -119,6 +119,11 @@ def patch_hamburguesa_id(id):
             newvalues = { "$set": { key: data[key] } }
             hamburguesas.update_one(myquery, newvalues)
         all_hamburguesas = list(hamburguesas.find({"id":id}, {"_id":0}))
+
+        all_ingredientes = list(hamburguesa_ingrediente.find({"id_h":id}, {"_id":0}))
+        if(len(all_ingredientes) > 0):
+            for ingrediente in all_ingredientes:
+                all_hamburguesas[0]["ingredientes"].append({"path": pag+"/ingrediente/"+str(ingrediente["id_i"])})
         return jsonify(all_hamburguesas[0]), 200
     else:
         response = {'message': 'Parámetros inválidos'}
@@ -220,9 +225,11 @@ def delete_ingrediente_id(id):
     all_ingredientes = list(ingredientes.find({"id":id}, {"_id":0}))
     all_ingredientes_hamburguesas = list(hamburguesa_ingrediente.find({"id_i":id}, {"_id":0}))
     if(len(all_ingredientes_hamburguesas) > 0):
+        print("aquí")
         response = {'message': 'Ingrediente no se puede borrar, se encuentra presente en una hamburguesa'}
         return jsonify(response), 409
     elif(len(all_ingredientes) != 0 and len(all_ingredientes_hamburguesas) == 0):
+        print("también aquí")
         ingredientes.delete_many({"id": id})
         response = {'message': 'Ingrediente eliminado'}
         return jsonify(response), 200
